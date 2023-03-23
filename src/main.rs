@@ -1,13 +1,14 @@
-fn main() -> wry::Result<()> {
-    use wry::{
-        application::{
-            event::{Event, StartCause, WindowEvent},
-            event_loop::{ControlFlow, EventLoop},
-            window::WindowBuilder,
-        },
-        webview::WebViewBuilder,
-    };
+use wry::{
+    application::{
+        event::{Event, StartCause, WindowEvent},
+        event_loop::{ControlFlow, EventLoop},
+        menu::{MenuBar, MenuItemAttributes},
+        window::WindowBuilder,
+    },
+    webview::WebViewBuilder,
+};
 
+fn main() -> wry::Result<()> {
     let event_loop = EventLoop::new();
 
     let monitor = event_loop.primary_monitor().unwrap();
@@ -19,15 +20,22 @@ fn main() -> wry::Result<()> {
         0.0, // use f64 value
     );
 
+    let mut menu = MenuBar::new();
+    let mut file_menu = MenuBar::new();
+    file_menu.add_native_item(tao::menu::MenuItem::Quit);
+
+    menu.add_submenu("File", true, file_menu);
+
     let window = WindowBuilder::new()
         .with_title("Hello World")
         .with_decorations(false)
+        .with_menu(menu)
         .with_inner_size(window_size)
         .with_position(window_position)
         .build(&event_loop)?;
 
     let _webview = WebViewBuilder::new(window)?
-        .with_url("http://localhost:8080")?
+        .with_url("http://localhost:8899")?
         .build()?;
 
     event_loop.run(move |event, _, control_flow| {

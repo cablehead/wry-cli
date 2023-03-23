@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 wry = "=0.27.0"
 tao = "=0.18.1"
+clap = { version = "4.1.12", features = ["derive"] }

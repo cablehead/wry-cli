@@ -2,13 +2,24 @@ use wry::{
     application::{
         event::{Event, StartCause, WindowEvent},
         event_loop::{ControlFlow, EventLoop},
-        menu::{MenuBar, MenuItemAttributes},
+        menu::MenuBar,
         window::WindowBuilder,
     },
     webview::WebViewBuilder,
 };
 
+use clap::Parser;
+
+#[derive(Parser)]
+struct Cli {
+    /// Sets the URL to view
+    #[clap(short, long)]
+    url: String,
+}
+
 fn main() -> wry::Result<()> {
+    let cli: Cli = Cli::parse();
+
     let event_loop = EventLoop::new();
 
     let monitor = event_loop.primary_monitor().unwrap();
@@ -34,9 +45,7 @@ fn main() -> wry::Result<()> {
         .with_position(window_position)
         .build(&event_loop)?;
 
-    let _webview = WebViewBuilder::new(window)?
-        .with_url("http://localhost:8899")?
-        .build()?;
+    let _webview = WebViewBuilder::new(window)?.with_url(&cli.url)?.build()?;
 
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;

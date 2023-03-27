@@ -15,6 +15,10 @@ struct Cli {
     /// Sets the URL to view
     #[clap(short, long)]
     url: String,
+
+    /// Sets the window to always be on top
+    #[clap(long)]
+    always_on_top: bool,
 }
 
 fn main() -> wry::Result<()> {
@@ -37,19 +41,23 @@ fn main() -> wry::Result<()> {
 
     menu.add_submenu("File", true, file_menu);
 
-    let window = WindowBuilder::new()
+    let mut window_builder = WindowBuilder::new()
         .with_title("Hello World")
         .with_decorations(false)
         .with_menu(menu)
         .with_inner_size(window_size)
-        .with_position(window_position)
-        .build(&event_loop)?;
+        .with_position(window_position);
+
+    if cli.always_on_top {
+        window_builder = window_builder.with_always_on_top(true);
+    }
+
+    let window = window_builder.build(&event_loop)?;
 
     let _webview = WebViewBuilder::new(window)?.with_url(&cli.url)?.build()?;
 
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
-
         match event {
             Event::NewEvents(StartCause::Init) => println!("Wry has started!"),
             Event::WindowEvent {
